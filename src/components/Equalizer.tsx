@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { EQBand, EQState } from '../types';
-import { audioProcessor } from '../audio/audioProcessor';
+import { audioContextManager } from '../audio/audioContext';
 import './Equalizer.css';
 
 const DEFAULT_BANDS: EQBand[] = [
@@ -44,7 +44,7 @@ export function Equalizer({ visible = true, onClose }: EqualizerProps) {
     setState(prev => {
       const newBands = [...prev.bands];
       newBands[index] = { ...newBands[index], gain };
-      audioProcessor.setEQBand(index, gain);
+      audioContextManager.setEQBand(index, gain);
       return { ...prev, bands: newBands, preset: 'custom' };
     });
   }, []);
@@ -62,7 +62,7 @@ export function Equalizer({ visible = true, onClose }: EqualizerProps) {
         ...band,
         gain: presetValues[i],
       }));
-      audioProcessor.setEQBands(newBands);
+      audioContextManager.setEQBands(newBands);
       return { ...prev, bands: newBands, preset };
     });
   }, []);
@@ -71,9 +71,9 @@ export function Equalizer({ visible = true, onClose }: EqualizerProps) {
     setState(prev => {
       const newEnabled = !prev.enabled;
       if (newEnabled) {
-        audioProcessor.setEQBands(prev.bands);
+        audioContextManager.setEQBands(prev.bands);
       } else {
-        audioProcessor.setEQBands(prev.bands.map(b => ({ ...b, gain: 0 })));
+        audioContextManager.setEQBands(prev.bands.map(b => ({ ...b, gain: 0 })));
       }
       return { ...prev, enabled: newEnabled };
     });

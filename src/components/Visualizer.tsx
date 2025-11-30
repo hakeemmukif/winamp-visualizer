@@ -13,6 +13,12 @@ export function Visualizer({ audioData, type = 'bars', onTypeChange }: Visualize
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<VisualizerScene | null>(null);
   const animationRef = useRef<number>(0);
+  const audioDataRef = useRef<AudioData | null>(null);
+
+  // Keep audioData ref updated
+  useEffect(() => {
+    audioDataRef.current = audioData;
+  }, [audioData]);
 
   // Initialize scene
   useEffect(() => {
@@ -20,10 +26,10 @@ export function Visualizer({ audioData, type = 'bars', onTypeChange }: Visualize
 
     sceneRef.current = new VisualizerScene(containerRef.current);
 
-    // Animation loop
+    // Animation loop - uses ref to always get latest audioData
     const animate = () => {
       if (sceneRef.current) {
-        sceneRef.current.update(audioData);
+        sceneRef.current.update(audioDataRef.current);
         sceneRef.current.render();
       }
       animationRef.current = requestAnimationFrame(animate);
@@ -36,11 +42,6 @@ export function Visualizer({ audioData, type = 'bars', onTypeChange }: Visualize
       sceneRef.current = null;
     };
   }, []);
-
-  // Update audio data each frame (handled in animation loop)
-  useEffect(() => {
-    // Audio data is passed directly to update() in animation loop
-  }, [audioData]);
 
   // Handle visualizer type change
   useEffect(() => {

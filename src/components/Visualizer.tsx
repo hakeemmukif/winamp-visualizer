@@ -51,7 +51,7 @@ export function Visualizer({ audioData, type = 'bars', onTypeChange }: Visualize
   }, [type]);
 
   const cycleVisualizerType = useCallback(() => {
-    const types: VisualizerType[] = ['bars', 'waveform', 'particles', 'tunnel'];
+    const types: VisualizerType[] = ['bars', 'waveform', 'particles', 'tunnel', 'ambience', 'battery'];
     const currentIndex = types.indexOf(type);
     const nextIndex = (currentIndex + 1) % types.length;
     onTypeChange?.(types[nextIndex]);

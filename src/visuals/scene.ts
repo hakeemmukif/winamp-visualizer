@@ -3,9 +3,9 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import type { AudioData } from '../types';
-import { synthwaveGridShader, synthwaveSunShader } from './shaders/synthwave';
+import { synthwaveGridShader, synthwaveSunShader, ambienceShader, batteryShader } from './shaders/synthwave';
 
-export type VisualizerType = 'bars' | 'waveform' | 'particles' | 'tunnel';
+export type VisualizerType = 'bars' | 'waveform' | 'particles' | 'tunnel' | 'ambience' | 'battery';
 
 export class VisualizerScene {
   private scene: THREE.Scene;
@@ -23,6 +23,8 @@ export class VisualizerScene {
   private tunnel: THREE.Mesh | null = null;
   private grid: THREE.Mesh | null = null;
   private sun: THREE.Mesh | null = null;
+  private ambiencePlane: THREE.Mesh | null = null;
+  private batteryPlane: THREE.Mesh | null = null;
 
   private currentType: VisualizerType = 'bars';
   private time = 0;
@@ -224,8 +226,56 @@ export class VisualizerScene {
     this.scene.add(this.tunnel);
   }
 
+  private createAmbience(): void {
+    const geometry = new THREE.PlaneGeometry(50, 30);
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uBass: { value: 0 },
+        uMids: { value: 0 },
+        uHighs: { value: 0 },
+        uAverage: { value: 0 },
+      },
+      vertexShader: ambienceShader.vertex,
+      fragmentShader: ambienceShader.fragment,
+    });
+
+    this.ambiencePlane = new THREE.Mesh(geometry, material);
+    this.ambiencePlane.position.z = -5;
+    this.ambiencePlane.visible = false;
+    this.scene.add(this.ambiencePlane);
+  }
+
+  private createBattery(): void {
+    const geometry = new THREE.PlaneGeometry(50, 30);
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uBass: { value: 0 },
+        uMids: { value: 0 },
+        uHighs: { value: 0 },
+        uAverage: { value: 0 },
+        uPreset: { value: 0 },
+      },
+      vertexShader: batteryShader.vertex,
+      fragmentShader: batteryShader.fragment,
+    });
+
+    this.batteryPlane = new THREE.Mesh(geometry, material);
+    this.batteryPlane.position.z = -5;
+    this.batteryPlane.visible = false;
+    this.scene.add(this.batteryPlane);
+  }
+
   setVisualizerType(type: VisualizerType): void {
     this.currentType = type;
+
+    // Determine if we should show synthwave environment
+    const showSynthwave = type === 'bars' || type === 'waveform' || type === 'particles' || type === 'tunnel';
+
+    // Toggle synthwave environment
+    if (this.grid) this.grid.visible = showSynthwave;
+    if (this.sun) this.sun.visible = showSynthwave;
 
     // Hide all visualizer elements
     this.bars.forEach(bar => (bar.visible = type === 'bars'));
@@ -238,6 +288,22 @@ export class VisualizerScene {
 
     if (!this.tunnel) this.createTunnel();
     if (this.tunnel) this.tunnel.visible = type === 'tunnel';
+
+    // WMP-style visualizers
+    if (!this.ambiencePlane) this.createAmbience();
+    if (this.ambiencePlane) this.ambiencePlane.visible = type === 'ambience';
+
+    if (!this.batteryPlane) this.createBattery();
+    if (this.batteryPlane) this.batteryPlane.visible = type === 'battery';
+
+    // Adjust camera for WMP modes
+    if (type === 'ambience' || type === 'battery') {
+      this.camera.position.set(0, 0, 15);
+      this.camera.lookAt(0, 0, 0);
+    } else {
+      this.camera.position.set(0, 5, 20);
+      this.camera.lookAt(0, 0, 0);
+    }
   }
 
   update(audioData: AudioData | null): void {
@@ -272,11 +338,19 @@ export class VisualizerScene {
       case 'tunnel':
         this.updateTunnel(audioData);
         break;
+      case 'ambience':
+        this.updateAmbience(audioData);
+        break;
+      case 'battery':
+        this.updateBattery(audioData);
+        break;
     }
 
-    // Camera movement based on bass
-    this.camera.position.z = 20 + audioData.bass * 3;
-    this.camera.position.y = 5 + Math.sin(this.time * 0.5) * audioData.mids * 2;
+    // Camera movement based on bass (only for synthwave modes)
+    if (this.currentType !== 'ambience' && this.currentType !== 'battery') {
+      this.camera.position.z = 20 + audioData.bass * 3;
+      this.camera.position.y = 5 + Math.sin(this.time * 0.5) * audioData.mids * 2;
+    }
   }
 
   private updateIdle(): void {
@@ -286,6 +360,22 @@ export class VisualizerScene {
       bar.scale.y = scale;
       bar.position.y = scale / 2;
     });
+
+    // Update WMP visualizers with gentle idle animation
+    const idleData: AudioData = {
+      frequencyData: new Uint8Array(0),
+      timeDomainData: new Uint8Array(0),
+      bass: 0.2 + Math.sin(this.time * 0.5) * 0.1,
+      mids: 0.15 + Math.sin(this.time * 0.7) * 0.08,
+      highs: 0.1 + Math.sin(this.time * 0.9) * 0.05,
+      average: 0.15 + Math.sin(this.time * 0.6) * 0.08,
+    };
+
+    if (this.currentType === 'ambience') {
+      this.updateAmbience(idleData);
+    } else if (this.currentType === 'battery') {
+      this.updateBattery(idleData);
+    }
   }
 
   private updateBars(audioData: AudioData): void {
@@ -352,6 +442,28 @@ export class VisualizerScene {
 
     const material = this.tunnel.material as THREE.MeshBasicMaterial;
     material.opacity = 0.3 + audioData.average * 0.5;
+  }
+
+  private updateAmbience(audioData: AudioData): void {
+    if (!this.ambiencePlane) return;
+
+    const material = this.ambiencePlane.material as THREE.ShaderMaterial;
+    material.uniforms.uTime.value = this.time;
+    material.uniforms.uBass.value = audioData.bass;
+    material.uniforms.uMids.value = audioData.mids;
+    material.uniforms.uHighs.value = audioData.highs;
+    material.uniforms.uAverage.value = audioData.average;
+  }
+
+  private updateBattery(audioData: AudioData): void {
+    if (!this.batteryPlane) return;
+
+    const material = this.batteryPlane.material as THREE.ShaderMaterial;
+    material.uniforms.uTime.value = this.time;
+    material.uniforms.uBass.value = audioData.bass;
+    material.uniforms.uMids.value = audioData.mids;
+    material.uniforms.uHighs.value = audioData.highs;
+    material.uniforms.uAverage.value = audioData.average;
   }
 
   render(): void {

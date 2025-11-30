@@ -1,0 +1,271 @@
+/* Winamp Window Chrome Styles */
+
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+}
+
+/* Winamp Window Base */
+.winamp-window {
+  background: linear-gradient(
+    180deg,
+    #5a5a5a 0%,
+    #4a4a4a 2%,
+    #3a3a3a 50%,
+    #2a2a2a 98%,
+    #1a1a1a 100%
+  );
+  border: 1px solid #1a1a1a;
+  border-top-color: #6a6a6a;
+  border-left-color: #5a5a5a;
+  border-radius: 0;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    2px 2px 8px rgba(0, 0, 0, 0.5);
+  user-select: none;
+  position: relative;
+}
+
+/* Title Bar */
+.winamp-titlebar {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 2px;
+  background: linear-gradient(
+    90deg,
+    #000080 0%,
+    #1084d0 40%,
+    #000080 100%
+  );
+  border-bottom: 1px solid #0a0a0a;
+  cursor: move;
+}
+
+.winamp-titlebar:active {
+  cursor: grabbing;
+}
+
+.titlebar-buttons-left,
+.titlebar-buttons-right {
+  display: flex;
+  gap: 2px;
+}
+
+.titlebar-buttons-left {
+  margin-right: 4px;
+}
+
+.titlebar-buttons-right {
+  margin-left: auto;
+}
+
+.titlebar-text {
+  flex: 1;
+  font-size: 10px;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 #000000;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.titlebar-btn {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  font-size: 10px;
+  line-height: 12px;
+  text-align: center;
+  background: linear-gradient(180deg, #d0d0d0 0%, #a0a0a0 50%, #808080 100%);
+  border: 1px solid #404040;
+  border-top-color: #e0e0e0;
+  border-left-color: #c0c0c0;
+  color: #000000;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.titlebar-btn:hover {
+  background: linear-gradient(180deg, #e0e0e0 0%, #b0b0b0 50%, #909090 100%);
+}
+
+.titlebar-btn:active {
+  background: linear-gradient(180deg, #808080 0%, #a0a0a0 50%, #c0c0c0 100%);
+  border-top-color: #404040;
+  border-left-color: #404040;
+  border-right-color: #c0c0c0;
+  border-bottom-color: #e0e0e0;
+}
+
+.close-btn:hover {
+  background: linear-gradient(180deg, #ff6060 0%, #cc3030 50%, #aa2020 100%);
+  color: #ffffff;
+}
+
+/* LCD Display Common Styles */
+.lcd-display {
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-top-color: #0a0a0a;
+  border-left-color: #0a0a0a;
+  font-family: 'Courier New', monospace;
+  color: #00ff00;
+  text-shadow: 0 0 4px #00ff00;
+}
+
+/* LED Indicator */
+.led-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #003300;
+  border: 1px solid #001100;
+}
+
+.led-indicator.active {
+  background: radial-gradient(circle at 30% 30%, #00ff00, #00aa00);
+  box-shadow: 0 0 4px #00ff00;
+}
+
+.led-indicator.amber {
+  background: #332200;
+}
+
+.led-indicator.amber.active {
+  background: radial-gradient(circle at 30% 30%, #ffaa00, #aa7700);
+  box-shadow: 0 0 4px #ffaa00;
+}
+
+.led-indicator.red {
+  background: #330000;
+}
+
+.led-indicator.red.active {
+  background: radial-gradient(circle at 30% 30%, #ff0000, #aa0000);
+  box-shadow: 0 0 4px #ff0000;
+}
+
+/* Beveled Button */
+.beveled-btn {
+  background: linear-gradient(180deg, #6a6a6a 0%, #4a4a4a 50%, #3a3a3a 100%);
+  border: 1px solid #2a2a2a;
+  border-top-color: #8a8a8a;
+  border-left-color: #7a7a7a;
+  color: #1a1a1a;
+  text-shadow: 1px 1px 0 #6a6a6a;
+  cursor: pointer;
+}
+
+.beveled-btn:hover {
+  background: linear-gradient(180deg, #7a7a7a 0%, #5a5a5a 50%, #4a4a4a 100%);
+}
+
+.beveled-btn:active {
+  background: linear-gradient(180deg, #3a3a3a 0%, #4a4a4a 50%, #5a5a5a 100%);
+  border-top-color: #2a2a2a;
+  border-left-color: #2a2a2a;
+  border-right-color: #7a7a7a;
+  border-bottom-color: #8a8a8a;
+}
+
+/* Recessed Panel */
+.recessed-panel {
+  background: linear-gradient(180deg, #2a2a2a 0%, #3a3a3a 100%);
+  border: 1px solid #4a4a4a;
+  border-top-color: #1a1a1a;
+  border-left-color: #1a1a1a;
+}
+
+/* Slider Track */
+.slider-track {
+  background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+  border: 1px solid #0a0a0a;
+}
+
+/* Slider Thumb */
+.slider-thumb {
+  background: linear-gradient(180deg, #8a8a8a 0%, #5a5a5a 50%, #4a4a4a 100%);
+  border: 1px solid #2a2a2a;
+  border-top-color: #aaaaaa;
+  cursor: pointer;
+}
+
+.slider-thumb:hover {
+  background: linear-gradient(180deg, #9a9a9a 0%, #6a6a6a 50%, #5a5a5a 100%);
+}
+
+.slider-thumb:active {
+  background: linear-gradient(180deg, #4a4a4a 0%, #5a5a5a 50%, #6a6a6a 100%);
+}
+
+/* Text Styles */
+.text-green {
+  color: #00ff00;
+  text-shadow: 0 0 4px #00ff00;
+}
+
+.text-amber {
+  color: #ffaa00;
+  text-shadow: 0 0 4px #ffaa00;
+}
+
+.text-red {
+  color: #ff0000;
+  text-shadow: 0 0 4px #ff0000;
+}
+
+.text-dim {
+  color: #004400;
+}
+
+/* Pixel Font Simulation */
+.pixel-text {
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Metal Texture Background */
+.metal-texture {
+  background:
+    linear-gradient(90deg,
+      rgba(255,255,255,0.03) 0%,
+      rgba(255,255,255,0) 50%,
+      rgba(255,255,255,0.03) 100%
+    ),
+    linear-gradient(180deg, #4a4a4a 0%, #3a3a3a 100%);
+}
+
+/* Grip Lines (for drag handles) */
+.grip-lines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    #2a2a2a 1px,
+    #2a2a2a 2px,
+    #5a5a5a 2px,
+    #5a5a5a 3px
+  );
+}
+
+/* Animation for active states */
+@keyframes led-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.led-indicator.active.pulse {
+  animation: led-pulse 1s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .winamp-window {
+    transform: scale(0.9);
+    transform-origin: top left;
+  }
+}

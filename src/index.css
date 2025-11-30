@@ -1,0 +1,103 @@
+/* Base Reset & Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: 'Arial', 'Helvetica', sans-serif;
+  line-height: 1.4;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: #ffffff;
+  background-color: #0a0014;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Reset button styles */
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid #00ff00;
+  outline-offset: 2px;
+}
+
+/* Reset input styles */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+input[type="range"]:focus-visible {
+  outline: 2px solid #00ff00;
+  outline-offset: 2px;
+}
+
+/* Selection colors */
+::selection {
+  background: #ff00ff;
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: #ff00ff;
+  color: #ffffff;
+}
+
+/* Prevent text selection on UI elements */
+.winamp-window {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow selection on specific elements */
+.track-name,
+.marquee-text {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}

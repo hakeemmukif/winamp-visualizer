@@ -10,6 +10,7 @@ function App() {
   const {
     state,
     audioData,
+    isDemoMode,
     play,
     pause,
     stop,
@@ -22,6 +23,7 @@ function App() {
     playNext,
     playPrevious,
     selectTrack,
+    startDemo,
   } = useAudioPlayer();
 
   const [eqVisible, setEqVisible] = useState(true);
@@ -71,16 +73,21 @@ function App() {
         case 'KeyP':
           togglePlaylist();
           break;
+        case 'KeyD':
+          if (!isDemoMode) {
+            startDemo();
+          }
+          break;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [state.isPlaying, state.currentTime, state.duration, state.volume, play, pause, seek, setVolume, toggleEQ, togglePlaylist]);
+  }, [state.isPlaying, state.currentTime, state.duration, state.volume, play, pause, seek, setVolume, toggleEQ, togglePlaylist, isDemoMode, startDemo]);
 
-  // Auto-play when track is loaded
+  // Auto-play when track is loaded (but not for demo mode)
   useEffect(() => {
-    if (state.currentTrack && !state.isPlaying) {
+    if (state.currentTrack && !state.isPlaying && state.currentTrack.id !== 'demo') {
       play();
     }
   }, [state.currentTrack?.id]);
@@ -91,6 +98,7 @@ function App() {
         <Player
           state={state}
           audioData={audioData}
+          isDemoMode={isDemoMode}
           onPlay={play}
           onPause={pause}
           onStop={stop}
@@ -101,6 +109,7 @@ function App() {
           onNext={playNext}
           onToggleEQ={toggleEQ}
           onTogglePlaylist={togglePlaylist}
+          onStartDemo={startDemo}
           eqVisible={eqVisible}
           playlistVisible={playlistVisible}
         />
@@ -125,8 +134,9 @@ function App() {
       <div className="keyboard-hints">
         <span>Space: Play/Pause</span>
         <span>Arrows: Seek/Volume</span>
-        <span>E: Toggle EQ</span>
-        <span>P: Toggle Playlist</span>
+        <span>D: Demo Mode</span>
+        <span>E: EQ</span>
+        <span>P: Playlist</span>
       </div>
     </div>
   );

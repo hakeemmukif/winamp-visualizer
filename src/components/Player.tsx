@@ -8,6 +8,7 @@ import './Player.css';
 interface PlayerProps {
   state: PlayerState;
   audioData: AudioData | null;
+  isDemoMode?: boolean;
   onPlay: () => void;
   onPause: () => void;
   onStop: () => void;
@@ -18,6 +19,7 @@ interface PlayerProps {
   onNext: () => void;
   onToggleEQ: () => void;
   onTogglePlaylist: () => void;
+  onStartDemo: () => void;
   eqVisible: boolean;
   playlistVisible: boolean;
 }
@@ -25,6 +27,7 @@ interface PlayerProps {
 export function Player({
   state,
   audioData,
+  isDemoMode = false,
   onPlay,
   onPause,
   onStop,
@@ -35,6 +38,7 @@ export function Player({
   onNext,
   onToggleEQ,
   onTogglePlaylist,
+  onStartDemo,
   eqVisible,
   playlistVisible,
 }: PlayerProps) {
@@ -54,8 +58,8 @@ export function Player({
   }, [state.currentTrack]);
 
   const formatTime = useCallback((seconds: number): string => {
-    if (!seconds || isNaN(seconds)) return '00:00';
-    const mins = Math.floor(seconds / 60);
+    if (!seconds || isNaN(seconds) || !isFinite(seconds)) return '00:00';
+    const mins = Math.floor(seconds / 60) % 60;
     const secs = Math.floor(seconds % 60);
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }, []);
@@ -132,13 +136,13 @@ export function Player({
                 >
                   {state.currentTrack
                     ? `${state.currentTrack.artist ? state.currentTrack.artist + ' - ' : ''}${state.currentTrack.name}`
-                    : 'WINAMP - No track loaded'}
+                    : 'WINAMP - Press DEMO or add tracks'}
                 </span>
               </div>
             </div>
 
             <div className="format-info">
-              <span className="kbps">192</span>
+              <span className="kbps">{isDemoMode ? 'GEN' : '192'}</span>
               <span className="khz">44</span>
               <span className="stereo">{state.isPlaying ? 'STEREO' : 'MONO'}</span>
             </div>
@@ -149,12 +153,12 @@ export function Player({
             <input
               type="range"
               min="0"
-              max={state.duration || 100}
+              max={isDemoMode ? 100 : (state.duration || 100)}
               step="0.1"
-              value={state.currentTime}
+              value={isDemoMode ? (state.currentTime % 100) : state.currentTime}
               onChange={handleSeekChange}
               className="seek-slider"
-              disabled={!state.currentTrack}
+              disabled={!state.currentTrack || isDemoMode}
               aria-label="Seek"
             />
           </div>
@@ -168,7 +172,7 @@ export function Player({
               onStop={onStop}
               onPrevious={onPrevious}
               onNext={onNext}
-              disabled={!state.currentTrack}
+              disabled={!state.currentTrack && !isDemoMode}
             />
 
             <div className="volume-balance">
@@ -203,6 +207,14 @@ export function Player({
 
           {/* Toggle Buttons */}
           <div className="toggle-buttons">
+            <button
+              className={`toggle-btn demo-btn ${isDemoMode ? 'active' : ''}`}
+              onClick={onStartDemo}
+              disabled={isDemoMode}
+              title="Play demo audio"
+            >
+              DEMO
+            </button>
             <button
               className={`toggle-btn ${eqVisible ? 'active' : ''}`}
               onClick={onToggleEQ}

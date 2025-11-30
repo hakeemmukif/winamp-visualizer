@@ -22,6 +22,8 @@ export function useAudioPlayer() {
   const demoIntervalRef = useRef<number | null>(null);
   const demoTimeRef = useRef(0);
   const demoNodesRef = useRef<AudioScheduledSourceNode[]>([]);
+  const isPlayingRef = useRef(false);
+  const isDemoModeRef = useRef(false);
 
   // Initialize audio element
   useEffect(() => {
@@ -70,15 +72,24 @@ export function useAudioPlayer() {
     };
   }, [isDemoMode]);
 
-  // Animation loop for audio data
+  // Keep refs in sync with state
+  useEffect(() => {
+    isPlayingRef.current = state.isPlaying;
+  }, [state.isPlaying]);
+
+  useEffect(() => {
+    isDemoModeRef.current = isDemoMode;
+  }, [isDemoMode]);
+
+  // Animation loop for audio data - runs continuously and checks refs
   useEffect(() => {
     const updateAudioData = () => {
-      if (audioContextManager.isReady && state.isPlaying) {
+      if (audioContextManager.isReady && isPlayingRef.current) {
         const data = audioContextManager.getAudioData();
         setAudioData(data);
 
         // Update demo time
-        if (isDemoMode) {
+        if (isDemoModeRef.current) {
           demoTimeRef.current += 1 / 60;
           setState(prev => ({ ...prev, currentTime: demoTimeRef.current }));
         }
@@ -91,7 +102,7 @@ export function useAudioPlayer() {
     return () => {
       cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [state.isPlaying, isDemoMode]);
+  }, []); // Only run once - uses refs for current state
 
   const initializeAudioContext = useCallback(async () => {
     await audioContextManager.initialize();
